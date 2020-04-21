@@ -1,4 +1,4 @@
-const socket = io('http://localhost:3000/');
+var socket = null;
 const serverAPI = 'http://localhost:8080/';
 const chatTemplate = `<div class="box-container">
 <div class="navbar">Chaty - <p style='display:inline;' id="clientName"></p>
@@ -47,7 +47,7 @@ const loadChatPage = async function (data) {
     document.getElementById('chatty-app').innerHTML = "";
     document.getElementById('chatty-app').insertAdjacentHTML('beforeend', chatTemplate);
     document.getElementById('clientName').innerHTML = data.name;
-    activateServer();
+    activateServer(data.id);
 }
 
 const sendMessage = function () {
@@ -55,7 +55,7 @@ const sendMessage = function () {
         let text = document.getElementById('message').value;
         if (!text || text == "") throw 'Type a message first'
         document.getElementById('message').value = "";
-        socket.emit('sendNewMessage', text);
+        sendSocketMessage(text);
         addMessageInBox(text, 'right')
     } catch (error) {
         if (typeof error == 'string') alert(error);
@@ -63,14 +63,21 @@ const sendMessage = function () {
     }
 }
 
-const activateServer = async function() {
+const activateServer = async function(userId) {
     try {
-        socket.on('receiveNewMessage', data => {
-            console.log(data);
-        })
+        socket = io.connect('http://localhost:3000',{ query: 'id='+userId });
+        socket.on('recieve_new_message', receiveSocketMessage);
     } catch (error) {
         console.log(error);
     }
+}
+
+const sendSocketMessage = function (text) {
+    socket.emit('new_message', {id: localStorage.getItem('id')==1?2:1,message:text});
+}
+
+const receiveSocketMessage = function(message) {
+    messageHandler(message, 'right');
 }
 
 
@@ -85,7 +92,7 @@ const addMessageInBox = function (text, from) {
 
 const messageHandler = function (data) {
     try {
-        addMessageInBox(data, 'left');
+        addMessageInBox(data.message, 'left');
     } catch (error) {
         console.log(error);
     }
@@ -122,6 +129,8 @@ const login = async function (event) {
 const logout = function () {
     localStorage.removeItem('email');
     localStorage.removeItem('name');
+    socket.disconnect();
+    socket=null;
     mount();
 }
 
