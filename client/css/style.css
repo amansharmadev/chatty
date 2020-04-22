@@ -70,6 +70,10 @@
 	font-size: 13px;
     display: inline-block;
     border-radius: 20px;
+    outline: none;
+}
+.message-button::-moz-focus-inner,.message-input ::-moz-focus-inner .message-button::focus, .message-button:focus{
+    border: 0;
 }
 .padding-5{
     padding: 5px;
