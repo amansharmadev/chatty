@@ -1,30 +1,57 @@
 var socket = null;
 const serverAPI = 'http://localhost:8080/';
 const chatTemplate = `<div class="box-container">
-<div class="navbar">Chaty - <p style='display:inline;' id="clientName"></p>
-<span onclick="logout()" class="pull-right cursor">Logout</span>
+<div class="navbar">
+    <div class="height-100 width-70 float-left">
+        <img class="height-99" src="css/images/chat.png">
+        <p id="clientName" class="inline-block"></p>
+    </div>
+    <div class="img-wrapper height-100 width-5 float-right inline-block">
+        <img class="height-80 padding-5" src="css/images/logout.png" onclick="logout()">
+    </div>
 </div>
-<div id="message-box" class="message-container" > <span class="text-center margin-auto">Login successfully</span> </div>
+<div class="section">
+    <div id="message-box" class="message-container size-100" >
+        <span class="text-center margin-auto">Login successfully</span>
+    </div>
 </div>
-<div style=" text-align:center; width: 1900px; position: absolute; bottom: 20px; margin: auto;">
-<input style="width:400px;" id="message" type="text" placeholder="Type a message"></input>
-<button onclick="sendMessage()">Send</button>
+<div class="footer">
+    <div class="button-input-wrapper">
+        <div class="height-100 width-70 float-left">
+            <input class="message-input" id="message" type="text" placeholder="Type a message"></input>
+        </div>
+        <div class="width-30 height-100 float-right inline-block">
+            <button class="message-button" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
 </div>`
 const loginTemplate = `<div class="box-container">
-<div class="text-center">Welcome! please login</div>
- <form onsubmit="login(event)">
-     <div>
-         <label>Email</label>
-         <input type="text" id="login_email" required placeholder="example@email.com"> </input>
+<div class="navbar">
+    <div class="height-100 width-70 float-left">
+        <img class="height-99" src="css/images/chat.png">
+    </div>
+</div>
+<div class="text-center heightpx-100">Welcome! please login</div>
+<div class="login-section">
+
+     <div class="row height-20">
+        <div class="width-30 height-100 float-left">
+            <label class="label-login display-block">Email</label>
+        </div>
+        <div class="width-70 float-right">
+            <input class="login-input" type="text" id="login_email" required placeholder="example@email.com"> </input>
+        </div>
      </div>
-     <div>
-         <label>Password</label>
-         <input type="password" id="login_password" required placeholder="******"> </input>
+     <div class="row height-20">
+     <div class="width-30 height-100 float-left"> <label class="display-block label-login">Password</label> </div>
+    <div class="width-70 float-right">
+        <input type="password" class="login-input" id="login_password" required placeholder="******"> </input>
+    </div>
      </div>
-     <div>
-         <button type="submit">Login</button>
+     <div class="row height-20 text-center">
+        <button class="message-button" onlick="onsubmit="login(event)">Login</button>
      </div>
- </form>
+ </div>
 </div>`
 
 
@@ -63,9 +90,9 @@ const sendMessage = function () {
     }
 }
 
-const activateServer = async function(userId) {
+const activateServer = async function (userId) {
     try {
-        socket = io.connect('http://localhost:3000',{ query: 'id='+userId });
+        socket = io.connect('http://localhost:3000', { query: 'id=' + userId });
         socket.on('recieve_new_message', receiveSocketMessage);
     } catch (error) {
         console.log(error);
@@ -73,10 +100,10 @@ const activateServer = async function(userId) {
 }
 
 const sendSocketMessage = function (text) {
-    socket.emit('new_message', {id: localStorage.getItem('id')==1?2:1,message:text});
+    socket.emit('new_message', { id: localStorage.getItem('id') == 1 ? 2 : 1, message: text });
 }
 
-const receiveSocketMessage = function(message) {
+const receiveSocketMessage = function (message) {
     messageHandler(message, 'right');
 }
 
@@ -130,7 +157,7 @@ const logout = function () {
     localStorage.removeItem('email');
     localStorage.removeItem('name');
     socket.disconnect();
-    socket=null;
+    socket = null;
     mount();
 }
 
